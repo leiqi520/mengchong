@@ -3,7 +3,6 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  123
   <RouterView />
 </template>
 
@@ -11,6 +10,7 @@ import { RouterLink, RouterView } from 'vue-router'
 header {
   line-height: 1.5;
   max-height: 100vh;
+  background-color: #fff;
 }
 
 .logo {
