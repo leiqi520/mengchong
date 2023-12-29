@@ -1,4 +1,3 @@
-import type { isJsxOpeningElement } from 'typescript';
 <template>
   <div class="common-layout">
     <el-container>
@@ -59,7 +58,7 @@ import type { isJsxOpeningElement } from 'typescript';
         </el-aside>
 
         <!-- 右侧 -->
-        <el-main>
+        <el-main class="container">
           <el-scrollbar height="580px">
             <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
               <el-tab-pane label="推荐" name="first">
@@ -98,13 +97,44 @@ import type { isJsxOpeningElement } from 'typescript';
         <QRcode width="100" height="100"></QRcode>
         <h4>使用QQ / 微信扫码登录</h4>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main class="diaRight">
+        <h2>账号登陆</h2>
+        <p>新用户注册<a>点击此处</a></p>
+        <div class="group">
+          <el-icon class="icon_touxiang"><UserFilled /></el-icon>
+          <input class="input" type="zahnghao" placeholder="账号" v-model="zhanghao" />
+        </div>
+        <div class="group">
+          <svg
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon"
+          >
+            <path
+              d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            ></path>
+          </svg>
+          <input class="input" type="mima" placeholder="密码" v-model="mima" />
+        </div>
+        <el-button
+          type="danger"
+          class="login_2"
+          :class="{ active: show }"
+          :disabled="show"
+          @click="login()"
+          >登录</el-button
+        >
+      </el-main>
     </el-container>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 const input3 = ref('')
 
@@ -127,6 +157,17 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 // 对话框
 const dialogTableVisible = ref(false)
 import QRcode from '@/components/QRindexView.vue'
+const zhanghao = ref('')
+const mima = ref('')
+const show = ref(true)
+watch(zhanghao, (newValue) => {
+  if (newValue.length > 0) {
+    show.value = false
+  }
+})
+const login = () => {
+  console.log(zhanghao.value, mima.value)
+}
 </script>
 
 <style scoped lang="less">
@@ -213,20 +254,20 @@ label {
   margin-bottom: 20px;
 }
 
-/deep/ .el-tabs__nav-wrap {
+:deep(.el-tabs__nav-wrap) {
   &::after {
     display: none;
   }
 }
-/deep/ .el-tabs__item {
+:deep(.el-tabs__item) {
   color: rgba(51, 51, 51, 0.8);
 }
 
-/deep/ .el-tabs__active-bar {
+:deep(.el-tabs__active-bar) {
   background-color: #fff;
 }
 
-/deep/ .el-tabs__item.is-active {
+:deep(.el-tabs__item.is-active) {
   width: 85px;
   color: #333333;
   font-weight: bold;
@@ -236,11 +277,15 @@ label {
   text-align: center;
   border-radius: 20px;
 }
-/deep/ .el-tabs--top .el-tabs__item.is-top:nth-child(2) {
+:deep(.el-tabs--top .el-tabs__item.is-top:nth-child(2)) {
   padding-left: 20px;
 }
-/deep/ .el-tabs--top .el-tabs__item.is-top:last-child {
+:deep(.el-tabs--top .el-tabs__item.is-top:last-child) {
   padding-right: 20px;
+}
+
+.container {
+  height: 600px;
 }
 // 对话框
 .diaLeft {
@@ -250,6 +295,7 @@ label {
     color: #fc2b2b;
     line-height: 60px;
     text-align: center;
+    border-right: 1px solid #e6e6e6;
   }
   img {
     width: 190px;
@@ -257,6 +303,85 @@ label {
   }
   h4 {
     text-align: center;
+  }
+}
+
+.diaRight {
+  h2 {
+    text-align: center;
+  }
+  P {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    a {
+      cursor: pointer;
+    }
+    a:hover {
+      color: #1baec2;
+    }
+  }
+  .group {
+    display: flex;
+    line-height: 30px;
+    align-items: center;
+    position: relative;
+    max-width: 200px;
+    margin-left: 90px;
+    margin-bottom: 20px;
+  }
+
+  .input {
+    width: 100%;
+    height: 45px;
+    line-height: 30px;
+    padding: 0 5rem;
+    padding-left: 3rem;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    background-color: #f8fafc;
+    color: #0d0c22;
+    transition: 0.5s ease;
+  }
+  .icon_touxiang {
+    position: absolute;
+    left: 0.9rem;
+    font-size: 18px;
+    color: #94a3b8;
+  }
+  .input::placeholder {
+    color: #94a3b8;
+  }
+
+  .input:focus,
+  input:hover {
+    outline: none;
+    border-color: rgba(129, 140, 248);
+    background-color: #fff;
+    box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
+  }
+
+  .icon {
+    position: absolute;
+    left: 1rem;
+    fill: none;
+    width: 1rem;
+    height: 1rem;
+  }
+  .login_2 {
+    margin-left: 80px;
+    width: 60%;
+    height: 50px;
+    border-radius: 30px;
+    background: #ff2e4d;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .active {
+    background: rgba(#ff2e4d, 0.3);
+    border: none;
+    cursor: not-allowed;
   }
 }
 </style>
