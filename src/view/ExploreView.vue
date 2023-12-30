@@ -123,6 +123,7 @@ import { ref, watch, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { loginAPI, userListAPI } from '../apis/user.js'
 import { useRouter } from 'vue-router'
+import { useCounterStore } from '../stores/counter'
 const router = useRouter()
 const input3 = ref('')
 
@@ -140,11 +141,13 @@ import QRcode from '@/components/QRindexView.vue'
 const zhanghao = ref('')
 const mima = ref('')
 const show = ref(true)
+
 watch(zhanghao, (newValue) => {
   if (newValue.length > 0) {
     show.value = false
   }
 })
+
 const show_login = ref(true)
 
 const mount = async () => {
@@ -169,6 +172,8 @@ const login = async () => {
     window.sessionStorage.setItem('username', zhanghao.value)
     const res2 = await userListAPI({ username: zhanghao.value })
     geren.value = res2.data.data[0]
+    const store = useCounterStore()
+    store.username = zhanghao.value
     dialogTableVisible.value = false
     show_login.value = false
     //登录后
