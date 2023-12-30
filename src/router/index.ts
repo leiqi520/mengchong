@@ -6,8 +6,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Explore
+      component: Explore,
+      children:[
+        {
+          path: '/',
+          component: () => import('@/view/FaxianView.vue')
+        },
+        {
+          path: '/yonghu',
+          component: () => import('@/view/gerenView.vue')
+        },
+      ]
     },
+
     // {
     //   path: '/about',
     //   name: 'about',

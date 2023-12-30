@@ -20,7 +20,9 @@
 
           <el-col :span="4">
             <div class="grid-content ep-bg-purple" />
-            <button class="chuangzuo" @click="dialogTableVisible = true">创作中心</button>
+            <button class="chuangzuo" @click="dialogTableVisible = true" v-if="show_login">
+              创作中心
+            </button>
           </el-col>
         </el-row>
       </el-header>
@@ -37,6 +39,7 @@
             <el-menu-item
               index="1"
               :style="{ background: isopen ? 'rgba(0, 0, 0, 0.03)' : ' #fff' }"
+              @click="faxian()"
             >
               <el-icon><House /></el-icon>
               <span>发现</span>
@@ -45,47 +48,29 @@
               <el-icon><DocumentAdd /></el-icon>
               <span>发布</span>
             </el-menu-item>
-            <el-menu-item index="3" @click="dialogTableVisible = true">
+            <el-menu-item index="3" @click="tongzhi()">
               <el-icon><Bell /></el-icon>
               <span>通知</span>
             </el-menu-item>
+            <el-menu-item v-if="!show_login" index="4" @click="yonghu()">
+              <el-icon class="geren"><img :src="geren.touxiang" /></el-icon>
+              <span>{{ geren.username }}</span>
+            </el-menu-item>
           </el-menu>
-          <el-button type="danger" class="login" @click="dialogTableVisible = true">登录</el-button>
-          <el-card class="box-card" @click="dialogTableVisible = true">
+          <el-button
+            type="danger"
+            v-if="show_login"
+            class="login"
+            @click="dialogTableVisible = true"
+            >登录</el-button
+          >
+          <el-card class="box-card" @click="dialogTableVisible = true" v-if="show_login">
             <h5>马上登录即可</h5>
             <p>刷到更懂你的优质内容</p>
           </el-card>
         </el-aside>
-
+        <router-view></router-view>
         <!-- 右侧 -->
-        <el-main class="container">
-          <el-scrollbar height="580px">
-            <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-              <el-tab-pane label="推荐" name="first">
-                <el-row :gutter="20">
-                  <el-col v-for="o in 8" :key="o" :span="6">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img
-                        src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                        class="image"
-                      />
-                      <div style="padding: 14px">
-                        <span>Yummy hamburger</span>
-                        <div class="bottom">
-                          <time class="time">{{ currentDate }}</time>
-                          <el-button text class="button">Operating</el-button>
-                        </div>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-              </el-tab-pane>
-              <el-tab-pane label="猫" name="second">Config</el-tab-pane>
-              <el-tab-pane label="狗" name="third">Role</el-tab-pane>
-              <el-tab-pane label="其他" name="fourth">Task</el-tab-pane>
-            </el-tabs>
-          </el-scrollbar>
-        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -102,7 +87,7 @@
         <p>新用户注册<a>点击此处</a></p>
         <div class="group">
           <el-icon class="icon_touxiang"><UserFilled /></el-icon>
-          <input class="input" type="zahnghao" placeholder="账号" v-model="zhanghao" />
+          <input class="input" type="text" placeholder="账号" v-model="zhanghao" />
         </div>
         <div class="group">
           <svg
@@ -118,7 +103,7 @@
               stroke-linecap="round"
             ></path>
           </svg>
-          <input class="input" type="mima" placeholder="密码" v-model="mima" />
+          <input class="input" type="password" placeholder="密码" v-model="mima" />
         </div>
         <el-button
           type="danger"
@@ -134,8 +119,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import { loginAPI, userListAPI } from '../apis/user.js'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const input3 = ref('')
 
 //左侧
@@ -144,14 +132,6 @@ const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
   if (key !== '1') isopen.value = false
   else isopen.value = true
-}
-//右侧
-const currentDate = ref(new Date())
-
-import type { TabsPaneContext } from 'element-plus'
-const activeName = ref('first')
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
 }
 
 // 对话框
@@ -165,8 +145,51 @@ watch(zhanghao, (newValue) => {
     show.value = false
   }
 })
-const login = () => {
-  console.log(zhanghao.value, mima.value)
+const show_login = ref(true)
+
+const mount = async () => {
+  if (window.sessionStorage.getItem('token')) {
+    show_login.value = false
+    const username = window.sessionStorage.getItem('username')
+    const res2 = await userListAPI({ username })
+    geren.value = res2.data.data[0]
+  }
+}
+onMounted(mount)
+
+const geren = ref('')
+const login = async () => {
+  const res = await loginAPI({ username: zhanghao.value, password: mima.value })
+  if (res.data.status === 0) {
+    ElMessage({
+      message: '登录成功！',
+      type: 'success'
+    })
+    window.sessionStorage.setItem('token', res.data.token)
+    window.sessionStorage.setItem('username', zhanghao.value)
+    const res2 = await userListAPI({ username: zhanghao.value })
+    geren.value = res2.data.data[0]
+    dialogTableVisible.value = false
+    show_login.value = false
+    //登录后
+  } else {
+    ElMessage.error('登录失败！')
+  }
+}
+//登录后
+const tongzhi = () => {
+  if (show_login.value) {
+    dialogTableVisible.value = true
+  } else {
+    router.push('/tongzhi')
+  }
+}
+
+const yonghu = () => {
+  router.push('/yonghu')
+}
+const faxian = () => {
+  router.push('/')
 }
 </script>
 
@@ -228,65 +251,17 @@ label {
     font-size: 14px;
   }
 }
-.time {
-  font-size: 12px;
-  color: #999;
-}
-.bottom {
-  margin-top: 13px;
-  line-height: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.button {
-  padding: 0;
-  min-height: auto;
-}
-
-.image {
-  width: 100%;
-  display: block;
-}
-
-.el-col {
-  margin-bottom: 20px;
-}
-
-:deep(.el-tabs__nav-wrap) {
-  &::after {
-    display: none;
+.geren {
+  img {
+    width: 30px;
+    border-radius: 50%;
+  }
+  span {
+    margin-left: 10px;
   }
 }
-:deep(.el-tabs__item) {
-  color: rgba(51, 51, 51, 0.8);
-}
 
-:deep(.el-tabs__active-bar) {
-  background-color: #fff;
-}
-
-:deep(.el-tabs__item.is-active) {
-  width: 85px;
-  color: #333333;
-  font-weight: bold;
-  font-size: 16px;
-  position: relative;
-  background: rgba(0, 0, 0, 0.03);
-  text-align: center;
-  border-radius: 20px;
-}
-:deep(.el-tabs--top .el-tabs__item.is-top:nth-child(2)) {
-  padding-left: 20px;
-}
-:deep(.el-tabs--top .el-tabs__item.is-top:last-child) {
-  padding-right: 20px;
-}
-
-.container {
-  height: 600px;
-}
 // 对话框
 .diaLeft {
   p {
