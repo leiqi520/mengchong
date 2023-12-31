@@ -44,13 +44,9 @@
               <el-icon><House /></el-icon>
               <span>发现</span>
             </el-menu-item>
-            <el-menu-item index="2">
+            <el-menu-item index="2" @click="fabu()">
               <el-icon><DocumentAdd /></el-icon>
               <span>发布</span>
-            </el-menu-item>
-            <el-menu-item index="3" @click="tongzhi()">
-              <el-icon><Bell /></el-icon>
-              <span>通知</span>
             </el-menu-item>
             <el-menu-item v-if="!show_login" index="4" @click="yonghu()">
               <el-icon class="geren"><img :src="geren.touxiang" /></el-icon>
@@ -182,11 +178,11 @@ const login = async () => {
   }
 }
 //登录后
-const tongzhi = () => {
-  if (show_login.value) {
+const fabu = () => {
+  if (!window.sessionStorage.getItem('token')) {
     dialogTableVisible.value = true
   } else {
-    router.push('/tongzhi')
+    router.push('/fabu')
   }
 }
 
@@ -363,5 +359,23 @@ label {
     border: none;
     cursor: not-allowed;
   }
+}
+:deep(.el-input__wrapper) {
+  height: 50px;
+  border-radius: 25px;
+}
+:deep(.el-input-group--append > .el-input__wrapper) {
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+:deep(.el-input-group__append) {
+  background-color: #fff;
+  position: relative;
+  right: 29px;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+.el-input {
+  --el-input-focus-border-color: #dcdfe6;
 }
 </style>

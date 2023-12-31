@@ -52,3 +52,12 @@ export const getOtherAPI = () => {
     method: 'GET',
   })
 }
+
+export const getGerenAPI = ({ username }) => {
+  return instance({
+    url: '/pet/getGeren',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    data: { username },
+    method: 'POST',
+  })
+}

@@ -16,19 +16,16 @@
       <el-header class="footer">
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
           <el-tab-pane label="发布" name="second">
-            <el-card :body-style="{ padding: '0px' }">
-              <img
-                src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                class="image"
-              />
-              <div style="padding: 14px">
-                <span>Yummy hamburger</span>
-                <div class="bottom">
-                  <time class="time">{{ currentDate }}</time>
-                  <el-button text class="button">Operating</el-button>
-                </div>
-              </div>
-            </el-card>
+            <el-row :gutter="20">
+              <el-col v-for="o in list" :key="o" :span="6">
+                <el-card :body-style="{ padding: '0px' }">
+                  <img :src="o.tupian" class="image" @click="dialogTableVisible = true" />
+                  <div style="padding: 14px">
+                    <span>{{ o.neirong }}</span>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
           </el-tab-pane>
           <el-tab-pane label="收藏" name="third">
             <el-icon size="150"><SwitchFilled /></el-icon>
@@ -42,7 +39,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { userListAPI } from '../apis/user.js'
+import { userListAPI, getGerenAPI } from '../apis/user.js'
 
 const geren = ref('')
 const username = window.sessionStorage.getItem('username')
@@ -56,6 +53,13 @@ import type { TabsPaneContext } from 'element-plus'
 const activeName = ref('second')
 const currentDate = ref(new Date())
 const handleClick = (tab: TabsPaneContext, event: Event) => {}
+
+const list = ref([])
+const getList = async () => {
+  const res = await getGerenAPI({ username })
+  list.value = res.data.data
+}
+onMounted(getList)
 </script>
 
 <style scoped lang="less">
