@@ -24,3 +24,31 @@ export const userListAPI = ({ username }) => {
     }
   })
 }
+
+export const getListAPI = () => {
+  return instance({
+    url: '/pet/getList',
+    method: 'GET',
+  })
+}
+
+export const getCatAPI = () => {
+  return instance({
+    url: '/pet/getCat',
+    method: 'GET',
+  })
+}
+
+export const getDogAPI = () => {
+  return instance({
+    url: '/pet/getDog',
+    method: 'GET',
+  })
+}
+
+export const getOtherAPI = () => {
+  return instance({
+    url: '/pet/getOther',
+    method: 'GET',
+  })
+}

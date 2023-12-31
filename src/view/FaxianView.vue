@@ -4,41 +4,108 @@
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="推荐" name="first">
           <el-row :gutter="20">
-            <el-col v-for="o in 8" :key="o" :span="6">
+            <el-col v-for="o in list" :key="o" :span="6">
               <el-card :body-style="{ padding: '0px' }">
-                <img
-                  src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                  class="image"
-                />
+                <img :src="o.tupian" class="image" @click="dialogTableVisible = true" />
                 <div style="padding: 14px">
-                  <span>Yummy hamburger</span>
+                  <span>{{ o.neirong }}</span>
                   <div class="bottom">
-                    <time class="time">{{ currentDate }}</time>
-                    <el-button text class="button">Operating</el-button>
+                    <dianZan></dianZan>
                   </div>
                 </div>
               </el-card>
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="猫" name="second">Config</el-tab-pane>
-        <el-tab-pane label="狗" name="third">Role</el-tab-pane>
-        <el-tab-pane label="其他" name="fourth">Task</el-tab-pane>
+        <el-tab-pane label="猫" name="second">
+          <el-row :gutter="20">
+            <el-col v-for="o in cat" :key="o" :span="6">
+              <el-card :body-style="{ padding: '0px' }">
+                <img :src="o.tupian" class="image" @click="dialogTableVisible = true" />
+                <div style="padding: 14px">
+                  <span>{{ o.neirong }}</span>
+                  <div class="bottom">
+                    <dianZan></dianZan>
+                  </div>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="狗" name="third">
+          <el-row :gutter="20">
+            <el-col v-for="o in Dog" :key="o" :span="6">
+              <el-card :body-style="{ padding: '0px' }">
+                <img :src="o.tupian" class="image" @click="dialogTableVisible = true" />
+                <div style="padding: 14px">
+                  <span>{{ o.neirong }}</span>
+                  <div class="bottom">
+                    <dianZan></dianZan>
+                  </div>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="其他" name="fourth">
+          <el-row :gutter="20">
+            <el-col v-for="o in Other" :key="o" :span="6">
+              <el-card :body-style="{ padding: '0px' }">
+                <img :src="o.tupian" class="image" @click="dialogTableVisible = true" />
+                <div style="padding: 14px">
+                  <span>{{ o.neirong }}</span>
+                  <div class="bottom">
+                    <dianZan></dianZan>
+                  </div>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
       </el-tabs>
     </el-scrollbar>
   </el-main>
+
+  <el-dialog v-model="dialogTableVisible" title="Shipping address">
+    <el-table :data="gridData">
+      <el-table-column property="date" label="Date" width="150" />
+      <el-table-column property="name" label="Name" width="200" />
+      <el-table-column property="address" label="Address" />
+    </el-table>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { getListAPI, getCatAPI, getOtherAPI, getDogAPI } from '@/apis/user.js'
+import dianZan from '@/components/dianZanView.vue'
 //右侧
-const currentDate = ref(new Date())
 
 import type { TabsPaneContext } from 'element-plus'
 const activeName = ref('first')
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
+
+const dialogTableVisible = ref(false)
+const gridData = [{}]
+
+const list = ref([])
+const cat = ref([])
+const Dog = ref([])
+const Other = ref([])
+
+const getList = async () => {
+  const res = await getListAPI()
+  list.value = res.data.data
+  const res2 = await getCatAPI()
+  cat.value = res2.data.data
+  const res3 = await getDogAPI()
+  Dog.value = res3.data.data
+  const res4 = await getOtherAPI()
+  Other.value = res4.data.data
+}
+onMounted(getList)
 </script>
 
 <style scoped lang="less">
@@ -56,7 +123,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   margin-top: 13px;
   line-height: 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 
@@ -68,6 +135,14 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 .image {
   width: 100%;
   display: block;
+  cursor: pointer;
+}
+.image:hover {
+  filter: brightness(0.8);
+}
+span {
+  cursor: pointer;
+  font-size: 16px;
 }
 :deep(.el-tabs__item.is-active) {
   width: 85px;

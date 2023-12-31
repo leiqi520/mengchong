@@ -121,7 +121,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import { loginAPI, userListAPI } from '../apis/user.js'
+import { loginAPI, userListAPI } from '@/apis/user.js'
 import { useRouter } from 'vue-router'
 import { useCounterStore } from '../stores/counter'
 const router = useRouter()
